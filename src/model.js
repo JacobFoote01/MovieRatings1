@@ -34,7 +34,6 @@ User.init(
   }
 );
 
-
 export class Movie extends Model {
   [util.inspect.custom]() {
     return this.toJSON();
@@ -83,7 +82,8 @@ Movie.init(
       },
       score: {
         type: DataTypes.INTEGER,
-      }
+        allowNull: false,
+      },
     },
     {
       modelName: 'rating',

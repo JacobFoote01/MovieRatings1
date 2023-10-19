@@ -1,11 +1,11 @@
+import lodash from 'lodash';
 import { Movie, Rating, User, db } from '../src/model.js';
 import movieData from './data/movies.json' assert { type: 'json' };
 
 console.log('Syncing database...');
-const usersInDB = await Promise.all(usersToCreate);
+await db.sync({ force: true });
 
 console.log(usersInDB);
-await db.sync({ force: true });
 
 console.log('Seeding database...');
 
@@ -24,6 +24,18 @@ const moviesInDB = await Promise.all(
 }),
 )
 
+console.log(moviesInDB)
+
+const usersToCreate = []
+for (let i=0; i < 10; i++) {
+    const email = `user${i}@test.com`
+    usersToCreate.push(User.create({ email: email, password: 'test' }))
+}
+
+const usersInDB = await Promise.all(usersToCreate)
+
+console.log(usersInDB)
+
 const ratingsInDB = await Promise.all(
     usersInDB.flatMap((user) => {
       const randomMovies = lodash.sampleSize(moviesInDB, 10);
@@ -34,7 +46,13 @@ const ratingsInDB = await Promise.all(
           movieId: movie.movieId,
         });
       });
+
       return movieRatings;
     }),
   );
+
   console.log(ratingsInDB);
+
+  await db.close()
+  console.log('Finished seeding database!')
+  
